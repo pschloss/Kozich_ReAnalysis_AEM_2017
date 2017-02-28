@@ -23,3 +23,11 @@ tar xvzf Trainset14_032015.pds.tgz trainset14_032015.pds/trainset14_032015.pds.*
 mv trainset14_032015.pds/* data/references/
 rmdir trainset14_032015.pds
 rm Trainset14_032015.pds.tgz
+
+
+# Download mothur (v1.39.3) and put it into code/
+wget --no-check-certificate https://github.com/mothur/mothur/releases/download/v.1.39.3/Mothur.mac_64.OSX-10.12.zip
+unzip Mothur.mac_64.OSX-10.12.zip
+mv mothur code/
+rm Mothur.mac_64.OSX-10.12.zip
+rm -rf __MACOSX
