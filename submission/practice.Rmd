@@ -1,16 +1,62 @@
+---
+title: Reproducing Kozich et al
+author: Joe Schmo
+date: "`r Sys.Date()`"
+output: html_document
+bibliography: references.bib
+csl: mbio.csl
+---
+
+```{r knitr_settings, eval=TRUE, echo=FALSE, cache=FALSE}
+opts_chunk$set("tidy" = TRUE)
+opts_chunk$set("echo" = FALSE)
+opts_chunk$set("eval" = TRUE)
+opts_chunk$set("warning" = FALSE)
+opts_chunk$set("cache" = FALSE)
+
+inline_hook <- function(x){
+
+	if(is.list(x)){
+		x <- unlist(x)
+	}
+
+	if(is.numeric(x)){
+		if(abs(x - round(x)) < .Machine$double.eps^0.5){
+			paste(format(x,big.mark=',', digits=0, scientific=FALSE))
+		} else {
+			paste(format(x,big.mark=',', digits=1, nsmall=1, scientific=FALSE))
+		}
+	} else {
+    	paste(x)      
+	}
+}
+knitr::knit_hooks$set(inline=inline_hook)
+```
+
+
+```{r scaling_up}
+shared_file_name <- "data/mothur/stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.pick.opti_mcc.shared"
+shared_file <- read.table(file=shared_file_name, header=T, stringsAsFactors=F)
+sequence_counts <- rowSums(shared_file[,-c(1,2,3)])
+
+million_sequence_counts <- sum(sequence_counts)/1e6
+average_sequence_counts <- mean(sequence_counts)
+percentile_sequence_counts <- quantile(sequence_counts, prob=0.05)
+```
+
 **Scaling up.** The advantage of the dual-index approach is that a large
 number of samples can be sequenced using a number of primers equal to only
 twice the square root of the number of samples. To fully evaluate this
 approach, we resequenced the V4 region of 360 samples that were previously
 described by sequencing the distal end of the V35 region on the 454 GS-FLX
-Titanium platform (18). In that study, we observed a clear separation
+Titanium platform [@Schloss2012]. In that study, we observed a clear separation
 between murine fecal samples obtained from 8 C57BL/6 mice at 0 to 9 (early)
 and 141 to 150 (late) days after weaning, and there was significantly less
 variation between the late samples than the early samples. In addition to
 the mouse fecal samples, we allocated 2 pairs of indices to resequence our
-mock community. We generated 4.3 million pairs of sequence reads from the
-16S rRNA gene with an average coverage of 9,913 pairs of reads per sample
-(95% of the samples had more than 2,454 pairs of sequences) using a new
+mock community. We generated `r million_sequence_counts` million pairs of sequence reads from the
+16S rRNA gene with an average coverage of `r average_sequence_counts` pairs of reads per sample
+(95% of the samples had more than `r percentile_sequence_counts` pairs of sequences) using a new
 collection of 8-nt indices (see the supplemental material). Although
 individual samples were expected to have various amplification efficiencies,
 analysis of the number of reads per index did not suggest a systematic
@@ -26,6 +72,31 @@ indicate that our approach can be scaled to multiplex large numbers of
 samples.
 
 
+![](../results/figures/nmds_figure.png)
+
 **FIG 4** Principal coordinate ordination of YC values (28) relating the
 community structures of the fecal microbiota from 12 mice collected on days
 0 through 9 (Early) and days 141 through 150 (Late) after weaning.
+
+
+
+```{r, result="asis"}
+days <- as.numeric(gsub(".*D(\\d*)_.*", "\\1", shared_file$Group))
+n_samples_per_day <- numeric()
+mean_seqs_per_day_per_sample <- numeric()
+total_seqs_per_day <- numeric()
+unique_days <- sort(unique(days))
+for(d in unique_days){
+    n_samples_per_day[as.character(d)] <- nrow(shared_file[days == d, -c(1,2,3)])
+    total_seqs_per_day[as.character(d)] <- sum(shared_file[days == d, -c(1,2,3)])
+    mean_seqs_per_day_per_sample[as.character(d)] <-
+                            mean(apply(shared_file[days == d, -c(1,2,3)], 1, sum), na.rm=T)
+}
+data <- data.frame(unique_days, mean_seqs_per_day_per_sample,
+                                        total_seqs_per_day, n_samples_per_day)
+kable(data, digits=c(0, 1, 0, 0), row.names=FALSE,
+                         col.names=c("Day<sup>2</sup>", "Seqs. per<br>sample (mean)",
+                         "Seqs. per<br>day (total)", "Number of<br>samples"), align='c')
+```
+
+## References
