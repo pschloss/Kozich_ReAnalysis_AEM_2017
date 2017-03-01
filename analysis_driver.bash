@@ -48,3 +48,7 @@ code/mothur/mothur code/get_error.batch
 
 # Generate the shared files
 code/mothur/mothur code/get_shared_otus.batch
+
+
+# Generate the nmds.axes file from our data
+code/mothur/mothur code/get_nmds_data.batch
