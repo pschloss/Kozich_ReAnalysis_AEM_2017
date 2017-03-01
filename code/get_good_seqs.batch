@@ -1,3 +1,8 @@
+# requires fastq.gz files to be in data/raw
+# requires data/references/silva.v4.align
+# requires data/references/trainset14_032015.pds.fasta
+# requires data/references/trainset14_032015.pds.tax
+
 make.file(inputdir=data/raw, type=gz, prefix=stability)
 make.contigs(file=current, inputdir=data/raw/, outputdir=data/mothur/, processors=8, rename=F)
 screen.seqs(fasta=current, group=current, maxambig=0, maxlength=275, maxhomop=8)

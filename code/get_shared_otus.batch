@@ -1,3 +1,5 @@
+# take good sequence, cluster them, and make a shared file
+
 set.dir(input=data/mothur, output=data/mothur, seed=19760620)
 set.current(processors=8)
 remove.groups(count=stability.trim.contigs.good.unique.good.filter.unique.precluster.denovo.uchime.pick.pick.count_table, fasta=stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pick.fasta, taxonomy=stability.trim.contigs.good.unique.good.filter.unique.precluster.pick.pds.wang.pick.taxonomy, groups=Mock_S280-Mock2_S366)
